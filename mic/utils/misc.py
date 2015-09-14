@@ -609,7 +609,11 @@ def get_arch(repometadata):
     archlist = []
     for repo in repometadata:
         if repo["primary"].endswith(".xml"):
-            root = xmlparse(repo["primary"])
+            try:
+                root = xmlparse(repo["primary"])
+            except cElementTree.ParseError, e:
+                message = '%s. Source file %s.' % (str(e), repo['primary'])
+                raise Exception(message)
             ns = root.getroot().tag
             ns = ns[0:ns.rindex("}")+1]
             for elm in root.getiterator("%spackage" % ns):
